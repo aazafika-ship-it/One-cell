@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProFix Master | Ultimate No-Loss Edition</title>
+    <title>ProFix Ultimate | Private No-Loss Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,6 +16,7 @@
             --border: rgba(255, 255, 255, 0.06);
             --success: #00ff88;
             --ease-god: cubic-bezier(0.3, 1.4, 0.2, 1);
+            --ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
         }
 
         body.light-mode {
@@ -28,33 +29,27 @@
             --success: #1d9d5d;
         }
 
-        * { box-sizing: border-box; transition: none; } 
+        /* --- BASIC RESET --- */
+        * { box-sizing: border-box; transition: none; margin: 0; padding: 0; } 
 
         body {
             background-color: var(--bg);
             background-image: url("https://grainy-gradients.vercel.app/noise.svg");
             color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0; overflow: hidden; perspective: 3000px;
+            overflow: hidden; perspective: 3000px;
             transition: background-color 0.8s ease;
         }
 
-        #cursor-glow {
-            position: fixed; width: 600px; height: 600px;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-            opacity: 0.1; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 0;
+        /* --- 🎬 SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #030303; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: transform 1.2s var(--ease-in-out-expo), opacity 1.2s var(--ease-in-out-expo);
         }
-
-        /* --- SIDE MENU --- */
-        #side-menu {
-            position: fixed; top: 0; right: -450px; width: 400px; height: 100vh;
-            background: var(--bg); backdrop-filter: blur(50px) saturate(180%);
-            z-index: 2000; padding: 100px 50px; border-left: 1px solid var(--border);
-            display: flex; flex-direction: column; gap: 20px;
-            transition: right 0.8s var(--ease-god);
-        }
-        #side-menu.active { right: 0; }
-        .menu-item { font-size: 1.8rem; font-weight: 800; color: var(--text); opacity: 0.2; cursor: pointer; letter-spacing: -1px; transition: 0.5s ease; }
-        .menu-item:hover, .menu-item.active { opacity: 1; color: var(--accent); transform: translateX(10px); }
+        #splash-screen.fade-out { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .splash-logo { font-size: 3.5rem; font-weight: 800; color: white; opacity: 0; transform: scale(0.8); filter: blur(10px); animation: logoAppear 1.2s var(--ease-god) forwards 0.3s; }
+        .splash-logo span { color: var(--accent); text-shadow: 0 0 25px rgba(0,242,255,0.6); }
+        @keyframes logoAppear { 100% { opacity: 1; transform: scale(1); filter: blur(0px); } }
 
         /* --- MAIN WRAPPER 3D --- */
         #main-wrapper {
@@ -82,7 +77,7 @@
         .social-links a:hover { color: var(--accent); opacity: 1; transform: translateY(-3px); }
         .menu-btn { background: var(--accent); color: white; padding: 10px 25px; border-radius: 100px; font-weight: 800; cursor: pointer; border: none; }
 
-        /* --- PAGE & BENTO --- */
+        /* --- BENTO SYSTEM --- */
         .page { display: none; width: 90%; max-width: 1200px; margin: 0 auto; opacity: 0; transform: translateY(150px); transition: 1s cubic-bezier(0.19, 1, 0.22, 1); }
         .page.active { display: grid; opacity: 1; transform: translateY(0); }
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-bottom: 50px; }
@@ -92,18 +87,28 @@
         .hero-card h1 { font-size: 3.2rem; margin: 0; letter-spacing: -3px; line-height: 0.9; }
         .hero-card span { color: var(--accent); }
 
-        .price-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-        .status-pill { background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 5px 15px; border-radius: 100px; font-size: 0.7rem; font-weight: 800; width: fit-content; margin-bottom: 15px; }
+        /* --- SIDE MENU --- */
+        #side-menu {
+            position: fixed; top: 0; right: -450px; width: 400px; height: 100vh;
+            background: var(--bg); backdrop-filter: blur(50px) saturate(180%);
+            z-index: 2000; padding: 100px 50px; border-left: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 20px;
+            transition: right 0.8s var(--ease-god);
+        }
+        #side-menu.active { right: 0; }
+        .menu-item { font-size: 1.8rem; font-weight: 800; color: var(--text); opacity: 0.2; cursor: pointer; transition: 0.5s; letter-spacing: -1px; }
+        .menu-item.active { opacity: 1; color: var(--accent); }
 
         /* --- WA FORM --- */
         .wa-form { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
         .wa-form input, .wa-form textarea {
             background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            border-radius: 15px; padding: 12px; color: var(--text); font-family: inherit; outline: none;
+            border-radius: 15px; padding: 15px; color: var(--text); font-family: inherit; outline: none;
         }
-        .wa-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .wa-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .wa-btn:hover { background: #128c7e; transform: scale(1.03); }
 
-        /* --- PASSWORD MODAL --- */
+        /* --- PASS MODAL --- */
         #pass-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.96); z-index: 3000; display: none;
@@ -111,19 +116,22 @@
             opacity: 0; transition: 0.8s ease;
         }
         #pass-overlay.active { display: flex; opacity: 1; }
-        #pass-overlay input { background: transparent; border: 2px solid var(--accent); color: white; padding: 15px; border-radius: 15px; font-size: 1.5rem; text-align: center; margin-bottom: 20px; outline: none; }
+        #pass-overlay input { background: transparent; border: 2px solid var(--accent); color: white; padding: 15px; border-radius: 15px; font-size: 1.5rem; text-align: center; outline: none; margin-bottom: 20px; }
 
         .tech-avatar { width: 50px; height: 50px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 10px; color: white; }
 
-        @media (max-width: 900px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .hero-card { grid-column: span 2; } }
+        @media (max-width: 900px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .hero-card { grid-column: span 2; } #side-menu { width: 100%; right: -100%; } }
     </style>
 </head>
 <body>
 
-    <div id="cursor-glow"></div>
+    <div id="splash-screen">
+        <div class="splash-logo">PRO<span>FIX</span></div>
+        <div style="color:rgba(255,255,255,0.3); margin-top:15px; font-size:0.8rem; letter-spacing: 2px;">GOD-LEVEL REPAIR</div>
+    </div>
 
     <div id="pass-overlay">
-        <h2 style="color:white; letter-spacing:-1px;">🔐 MASUKKAN SANDI (1212)</h2>
+        <h2 style="color:white; margin-bottom: 20px;">🔐 MASUKKAN SANDI (1212)</h2>
         <input type="password" id="pass-input" placeholder="****" maxlength="4">
         <button onclick="checkPass()" style="background:var(--accent); color:white; border:none; padding:12px 40px; border-radius:50px; font-weight:800; cursor:pointer;">VERIFIKASI</button>
         <p onclick="closePass()" style="margin-top:20px; cursor:pointer; color:white; opacity:0.5;">Batal</p>
@@ -133,7 +141,6 @@
         <div style="cursor: pointer; color: var(--accent); font-weight: 800; margin-bottom: 30px; text-align: right;" onclick="toggleMenu()">✕ TUTUP</div>
         <div class="menu-item active" data-page="home">HOME</div>
         <div class="menu-item" data-page="services">SERVICES</div>
-        <div class="menu-item" data-page="prices">PRICES</div>
         <div class="menu-item" style="color:var(--success);" data-page="secret-page" data-secure="true">✅ DONE SERVICE</div>
         <div class="menu-item" style="color:var(--accent);" data-page="tech-page" data-secure="true">👨‍🔧 TEKNISI TEAM</div>
         <div class="menu-item" data-page="contact">CONTACT & WA</div>
@@ -144,8 +151,8 @@
             <div style="font-weight: 800; font-size: 1.2rem;">PRO<span>FIX</span></div>
             <div class="nav-right">
                 <div class="social-links">
-                    <a href="https://instagram.com/your_ig" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://wa.me/6281234567890" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://instagram.com/zcftp" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/6287790421235" target="_blank"><i class="fab fa-whatsapp"></i></a>
                 </div>
                 <button onclick="toggleTheme()" style="background:none; border:none; color:var(--text); cursor:pointer; font-size:1.2rem;">🌓</button>
                 <button class="menu-btn" onclick="toggleMenu()">MENU +</button>
@@ -155,28 +162,15 @@
         <div id="home" class="page active">
             <div class="bento-grid">
                 <div class="card hero-card">
-                    <div class="status-pill">● ONLINE & READY</div>
+                    <div style="color:var(--success); font-weight:800; font-size:0.7rem; margin-bottom:10px;">● ONLINE & READY</div>
                     <h1>REPAIR <span>BEYOND</span> LIMITS.</h1>
-                    <p style="opacity: 0.6; margin-top: 15px;">Servis HP premium. Klik MENU untuk akses layanan & teknisi kami.</p>
+                    <p style="opacity: 0.6; margin-top: 15px;">Solusi reparasi gadget paling smooth. Klik MENU untuk melihat tim teknisi & unit yang selesai.</p>
                 </div>
-                <div class="card">
-                    <p style="opacity: 0.5; margin: 0;">RATING</p>
-                    <div style="font-size: 2.2rem; font-weight: 800;">4.9</div>
-                    <p style="font-size: 0.7rem;">Verified Reviews</p>
-                </div>
-                <div class="card">
-                    <p style="opacity: 0.5; margin: 0;">SPEED</p>
-                    <div style="font-size: 2rem; font-weight: 800;">30 MIN</div>
-                    <p style="font-size: 0.7rem;">LCD Replacement</p>
-                </div>
-                <div class="card hero-card">
-                    <h3 style="margin-top:0; color:var(--accent);">Estimasi Harga</h3>
-                    <div class="price-row"><span>LCD iPhone</span> <span>800k+</span></div>
-                    <div class="price-row"><span>LCD Android</span> <span>350k+</span></div>
-                </div>
-                <div class="card" style="grid-column: span 2;">
-                    <h3>LOKASI</h3>
-                    <p style="opacity: 0.6; font-size: 0.9rem;">Jakarta Selatan • Home Service Ready.</p>
+                <div class="card"><h3>RATING</h3><div style="font-size:2.5rem; font-weight:800;">4.9</div><p style="font-size:0.7rem;">Verified Service</p></div>
+                <div class="card"><h3>SPEED</h3><div style="font-size:2rem; font-weight:800;">30 MIN</div><p style="font-size:0.7rem;">Express Repair</p></div>
+                <div class="card hero-card" style="background: linear-gradient(135deg, rgba(0,242,255,0.03), transparent);">
+                    <h3>LOKASI KAMI</h3>
+                    <p style="opacity: 0.6; font-size: 0.9rem; margin-top: 10px;">Melayani Home Service & Antar Jemput area Jakarta & Sekitarnya.</p>
                 </div>
             </div>
         </div>
@@ -184,18 +178,10 @@
         <div id="services" class="page">
             <div class="bento-grid">
                 <div class="card hero-card"><h1>SERVICES.</h1></div>
-                <div class="card"><h3>LCD</h3><p>Ori Quality</p></div>
-                <div class="card"><h3>BATERAI</h3><p>Garansi 6 Bln</p></div>
-            </div>
-        </div>
-
-        <div id="prices" class="page">
-            <div class="bento-grid">
-                <div class="card hero-card"><h1>PRICES.</h1></div>
-                <div class="card" style="grid-column: span 2;">
-                    <div class="price-row"><span>iPhone 11</span> <span>750k</span></div>
-                    <div class="price-row"><span>iPhone 12</span> <span>1.2jt</span></div>
-                </div>
+                <div class="card"><h3>LCD</h3><p>Original Parts Only</p></div>
+                <div class="card"><h3>BATTERY</h3><p>High Capacity</p></div>
+                <div class="card"><h3>IC REPAIR</h3><p>Motherboard Expert</p></div>
+                <div class="card"><h3>CLEANING</h3><p>Deep Maintenance</p></div>
             </div>
         </div>
 
@@ -203,9 +189,10 @@
             <div class="bento-grid">
                 <div class="card hero-card" style="grid-column: span 4; border-color: var(--success);">
                     <h1 style="color:var(--success);">✅ UNIT SELESAI</h1>
+                    <p style="opacity:0.6;">Daftar gadget yang siap diambil hari ini.</p>
                 </div>
-                <div class="card"><h3>iPhone 13</h3><p>Done - LCD</p></div>
-                <div class="card"><h3>Samsung S22</h3><p>Done - IC Power</p></div>
+                <div class="card"><h3>iPhone 13</h3><p>Selesai: LCD</p></div>
+                <div class="card"><h3>Samsung S21</h3><p>Selesai: Baterai</p></div>
             </div>
         </div>
 
@@ -214,16 +201,8 @@
                 <div class="card hero-card" style="grid-column: span 4;">
                     <h1 style="color:var(--accent);">👨‍🔧 TEKNISI TEAM</h1>
                 </div>
-                <div class="card">
-                    <div class="tech-avatar">RM</div>
-                    <h3>RAMA</h3>
-                    <p style="color:var(--success); font-weight:800; font-size:0.8rem;">● ONLINE</p>
-                </div>
-                <div class="card">
-                    <div class="tech-avatar" style="background:#ffaa00">BN</div>
-                    <h3>BENO</h3>
-                    <p style="color:#ffaa00; font-weight:800; font-size:0.8rem;">● DI JALAN</p>
-                </div>
+                <div class="card"><div class="tech-avatar">RM</div><h3>RAMA</h3><p style="color:var(--success);">● ONLINE</p></div>
+                <div class="card"><div class="tech-avatar" style="background:#ffaa00">BN</div><h3>BENO</h3><p style="color:#ffaa00;">● ON WAY</p></div>
             </div>
         </div>
 
@@ -234,7 +213,7 @@
                     <div class="wa-form">
                         <input type="text" id="wa-name" placeholder="Nama Anda">
                         <input type="text" id="wa-model" placeholder="Tipe HP">
-                        <textarea id="wa-desc" rows="3" placeholder="Apa kendalanya?"></textarea>
+                        <textarea id="wa-desc" rows="3" placeholder="Apa masalah HP Anda?"></textarea>
                         <button class="wa-btn" onclick="sendWA()">
                             <i class="fab fa-whatsapp"></i> KIRIM KE WHATSAPP
                         </button>
@@ -247,15 +226,15 @@
     <script>
         let currentSecurePage = '';
 
+        // --- SPLASH LOGIC ---
         window.addEventListener('load', () => {
-            setTimeout(() => { staggerContent('#home'); }, 100);
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('fade-out');
+                setTimeout(() => { staggerContent('#home'); }, 800);
+            }, 2500);
         });
 
-        const glow = document.getElementById('cursor-glow');
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
-        });
-
+        // --- MENU LOGIC ---
         function toggleMenu() {
             document.body.classList.toggle('menu-open');
             document.getElementById('side-menu').classList.toggle('active');
@@ -263,13 +242,11 @@
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
 
-        // --- MASTER PAGE SWITCHER ---
+        // --- PAGE SWITCHER ---
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', function() {
                 const pageId = this.getAttribute('data-page');
-                const isSecure = this.getAttribute('data-secure');
-
-                if(isSecure === "true") {
+                if(this.getAttribute('data-secure') === "true") {
                     currentSecurePage = pageId;
                     const overlay = document.getElementById('pass-overlay');
                     overlay.style.display = 'flex';
@@ -281,29 +258,28 @@
         });
 
         function switchPage(pageId, menuItem) {
-            const wrapper = document.getElementById('main-wrapper');
+            const wrap = document.getElementById('main-wrapper');
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
             if(menuItem) menuItem.classList.add('active');
 
-            wrapper.style.filter = 'blur(10px) saturate(50%)';
-            document.querySelectorAll('.page.active').forEach(p => {
-                p.style.opacity = '0';
-                p.style.transform = 'translateY(-50px)';
+            wrap.style.filter = 'blur(15px) saturate(50%)';
+            document.querySelectorAll('.page.active').forEach(p => { 
+                p.style.opacity = '0'; 
+                p.style.transform = 'translateY(-50px)'; 
             });
 
             setTimeout(() => {
                 document.querySelectorAll('.page').forEach(p => { 
                     p.classList.remove('active'); 
                     p.style.display = 'none'; 
-                    p.style.transform = 'translateY(150px)';
+                    p.style.transform = 'translateY(150px)'; 
                 });
-                wrapper.style.filter = 'blur(0px) saturate(100%)';
-
+                wrap.style.filter = 'blur(0px) saturate(100%)';
                 const target = document.getElementById(pageId);
                 target.style.display = 'grid';
-                setTimeout(() => {
-                    target.classList.add('active');
-                    staggerContent('#' + pageId);
+                setTimeout(() => { 
+                    target.classList.add('active'); 
+                    staggerContent('#' + pageId); 
                 }, 50);
             }, 600);
 
@@ -311,39 +287,42 @@
         }
 
         function staggerContent(pageId) {
-            const cards = document.querySelectorAll(pageId + ' .card');
-            cards.forEach((card, i) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px) scale(0.9)';
-                setTimeout(() => {
-                    card.style.transition = 'all 0.8s var(--ease-god)';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0) scale(1)';
+            document.querySelectorAll(pageId + ' .card').forEach((card, i) => {
+                card.style.opacity = '0'; card.style.transform = 'translateY(30px) scale(0.95)';
+                setTimeout(() => { 
+                    card.style.transition = '0.8s var(--ease-god)'; 
+                    card.style.opacity = '1'; 
+                    card.style.transform = 'translateY(0) scale(1)'; 
                 }, 100 * (i + 1));
             });
         }
 
-        function closePass() {
-            const overlay = document.getElementById('pass-overlay');
-            overlay.classList.remove('active');
-            setTimeout(() => { overlay.style.display = 'none'; }, 800);
-        }
-
+        // --- PASS LOGIC ---
         function checkPass() {
             if(document.getElementById('pass-input').value === "1212") {
-                closePass();
-                const menuIdx = currentSecurePage === 'secret-page' ? 3 : 4;
-                switchPage(currentSecurePage, document.querySelectorAll('.menu-item')[menuIdx]);
+                document.getElementById('pass-overlay').classList.remove('active');
+                setTimeout(() => { 
+                    document.getElementById('pass-overlay').style.display = 'none';
+                    switchPage(currentSecurePage, null);
+                }, 800);
                 document.getElementById('pass-input').value = "";
-            } else { alert("SALAH!"); }
+            } else { alert("PASSWORD SALAH!"); }
         }
 
+        function closePass() {
+            document.getElementById('pass-overlay').classList.remove('active');
+            setTimeout(() => { document.getElementById('pass-overlay').style.display = 'none'; }, 800);
+        }
+
+        // --- WA LOGIC ---
         function sendWA() {
             const name = document.getElementById('wa-name').value;
             const model = document.getElementById('wa-model').value;
             const desc = document.getElementById('wa-desc').value;
-            const myNum = "6281234567890"; // GANTI NOMOR WA DISINI
-            window.open(`https://wa.me/${myNum}?text=Halo ProFix!%0ANama: ${name}%0AHP: ${model}%0AKendala: ${desc}`, '_blank');
+            // DATA PRIVATE (NOMOR LO)
+            const myNum = "6287790421235"; 
+            if(!name || !model) { alert("Isi data dulu bro!"); return; }
+            window.open(`https://wa.me/${myNum}?text=Halo ProFix!%0A*Nama:* ${name}%0A*Tipe HP:* ${model}%0A*Kendala:* ${desc}`, '_blank');
         }
     </script>
 </body>
