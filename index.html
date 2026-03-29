@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProFix Ultimate Master | No Loss Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #030303;
+            --nav-bg: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --text: #ffffff;
+            --accent: #00f2ff;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #00ff88;
+        }
+
+        body.light-mode {
+            --bg: #f5f5f7;
+            --nav-bg: rgba(0, 0, 0, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text: #1d1d1f;
+            --accent: #0071e3;
+            --border: rgba(0, 0, 0, 0.1);
+            --success: #1d9d5d;
+        }
+
+        * { box-sizing: border-box; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
+
+        body {
+            background-color: var(--bg);
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+            color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; overflow: hidden; perspective: 2000px;
+        }
+
+        #cursor-glow {
+            position: fixed; width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            opacity: 0.1; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 0;
+        }
+
+        /* --- SIDE MENU --- */
+        #side-menu {
+            position: fixed; top: 0; right: -450px; width: 400px; height: 100vh;
+            background: var(--bg); backdrop-filter: blur(50px);
+            z-index: 2000; padding: 100px 50px; border-left: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        #side-menu.active { right: 0; }
+        .menu-item { font-size: 1.8rem; font-weight: 800; color: var(--text); opacity: 0.3; cursor: pointer; letter-spacing: -1px; }
+        .menu-item:hover, .menu-item.active { opacity: 1; color: var(--accent); padding-left: 15px; }
+
+        /* --- MAIN WRAPPER (3D) --- */
+        #main-wrapper {
+            position: relative; width: 100%; height: 100vh; z-index: 1000;
+            transform-origin: left center; background: var(--bg); padding-top: 120px;
+            overflow-y: auto; overflow-x: hidden;
+        }
+        body.menu-open #main-wrapper {
+            transform: scale(0.75) translateX(-180px) rotateY(20deg);
+            border-radius: 60px; border: 1px solid var(--border); box-shadow: 0 100px 200px rgba(0,0,0,0.3);
+        }
+
+        /* --- PAGE SYSTEM & SLIDE-UP --- */
+        .page { display: none; width: 90%; max-width: 1200px; margin: 0 auto; opacity: 0; transform: translateY(150px); }
+        .page.active { display: grid; opacity: 1; transform: translateY(0); }
+
+        /* --- BENTO GRID --- */
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-bottom: 50px; }
+        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 35px; padding: 35px; }
+        .hero-card { grid-column: span 2; }
+        .hero-card h1 { font-size: 3.5rem; margin: 0; letter-spacing: -4px; line-height: 0.9; }
+        .hero-card span { color: var(--accent); }
+
+        .price-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .status-pill { background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 5px 15px; border-radius: 100px; font-size: 0.7rem; font-weight: 800; width: fit-content; margin-bottom: 15px; }
+
+        /* --- NAVBAR --- */
+        nav {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 950px; height: 75px;
+            background: var(--nav-bg); backdrop-filter: blur(25px);
+            border: 1px solid var(--border); border-radius: 100px;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1500;
+        }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .social-links a { color: var(--text); font-size: 1.2rem; opacity: 0.6; text-decoration: none; margin: 0 5px; }
+        .social-links a:hover { color: var(--accent); opacity: 1; }
+        .menu-btn { background: var(--accent); color: white; padding: 10px 25px; border-radius: 100px; font-weight: 800; cursor: pointer; border: none; }
+
+        /* --- WA FORM --- */
+        .wa-form { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .wa-form input, .wa-form textarea {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 15px; padding: 12px; color: var(--text); font-family: inherit; outline: none;
+        }
+        .wa-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* --- PASSWORD MODAL --- */
+        #pass-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.96); z-index: 3000; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        #pass-overlay input { background: transparent; border: 2px solid var(--accent); color: white; padding: 15px; border-radius: 15px; font-size: 1.5rem; text-align: center; margin-bottom: 20px; outline: none; }
+
+        .tech-avatar { width: 50px; height: 50px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 10px; color: white; }
+
+        @media (max-width: 900px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .hero-card { grid-column: span 2; } }
+    </style>
+</head>
+<body>
+
+    <div id="cursor-glow"></div>
+
+    <div id="pass-overlay">
+        <h2 style="color:white; letter-spacing:-1px;">🔐 AKSES TERBATAS (1212)</h2>
+        <input type="password" id="pass-input" placeholder="****" maxlength="4">
+        <button onclick="checkPass()" style="background:var(--accent); color:white; border:none; padding:12px 40px; border-radius:50px; font-weight:800; cursor:pointer;">MASUK</button>
+        <p onclick="closePass()" style="margin-top:20px; cursor:pointer; color:white; opacity:0.5;">Batal</p>
+    </div>
+
+    <div id="side-menu">
+        <div style="cursor: pointer; color: var(--accent); font-weight: 800; margin-bottom: 30px;" onclick="toggleMenu()">✕ TUTUP</div>
+        <div class="menu-item active" onclick="showPage('home', this)">HOME</div>
+        <div class="menu-item" onclick="showPage('services', this)">SERVICES</div>
+        <div class="menu-item" onclick="showPage('prices', this)">PRICES</div>
+        <div class="menu-item" style="color:var(--success);" onclick="openSecret('secret-page')">✅ DONE SERVICE</div>
+        <div class="menu-item" style="color:var(--accent);" onclick="openSecret('tech-page')">👨‍🔧 TEKNISI TEAM</div>
+        <div class="menu-item" onclick="showPage('contact', this)">CONTACT & WA</div>
+    </div>
+
+    <div id="main-wrapper">
+        <nav>
+            <div style="font-weight: 800; font-size: 1.2rem;">PRO<span>FIX</span></div>
+            <div class="nav-right">
+                <div class="social-links">
+                    <a href="https://instagram.com/your_ig" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/6281234567890" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <button onclick="toggleTheme()" style="background:none; border:none; color:var(--text); cursor:pointer; font-size:1.2rem;">🌓</button>
+                <button class="menu-btn" onclick="toggleMenu()">MENU +</button>
+            </div>
+        </nav>
+
+        <div id="home" class="page active">
+            <div class="bento-grid">
+                <div class="card hero-card">
+                    <div class="status-pill">● ONLINE & READY</div>
+                    <h1>REPAIR <span>BEYOND</span> LIMITS.</h1>
+                    <p style="opacity: 0.6; margin-top: 15px;">Servis HP level sultan. Klik MENU di pojok kanan atas untuk melihat opsi layanan kami!</p>
+                </div>
+                <div class="card">
+                    <p style="opacity: 0.5; margin: 0;">RATING</p>
+                    <div style="font-size: 2.5rem; font-weight: 800;">4.9</div>
+                    <p style="font-size: 0.7rem;">Verified Reviews</p>
+                </div>
+                <div class="card">
+                    <p style="opacity: 0.5; margin: 0;">DURASI</p>
+                    <div style="font-size: 2rem; font-weight: 800;">30 MIN</div>
+                    <p style="font-size: 0.7rem;">Ganti LCD & Baterai</p>
+                </div>
+                <div class="card hero-card">
+                    <h3 style="margin-top:0; color:var(--accent);">Harga Estimasi</h3>
+                    <div class="price-row"><span>LCD iPhone</span> <span>800k+</span></div>
+                    <div class="price-row"><span>LCD Android</span> <span>350k+</span></div>
+                </div>
+                <div class="card" style="grid-column: span 2;">
+                    <h3>LOKASI</h3>
+                    <p style="opacity: 0.6; font-size: 0.9rem;">Jakarta Selatan • Antar Jemput & Home Visit Ready.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="services" class="page">
+            <div class="bento-grid">
+                <div class="card hero-card"><h1>SERVICES.</h1></div>
+                <div class="card"><h3>LCD</h3><p>Original Part</p></div>
+                <div class="card"><h3>BATTERY</h3><p>Garansi 6 Bln</p></div>
+                <div class="card" style="grid-column: span 2;"><h3>MATOT</h3><p>IC & Water Damage.</p></div>
+            </div>
+        </div>
+
+        <div id="prices" class="page">
+            <div class="bento-grid">
+                <div class="card hero-card"><h1>PRICES.</h1></div>
+                <div class="card" style="grid-column: span 2;">
+                    <div class="price-row"><span>iPhone 11</span> <span>750k</span></div>
+                    <div class="price-row"><span>iPhone 12</span> <span>1.2jt</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="secret-page" class="page">
+            <div class="bento-grid">
+                <div class="card hero-card" style="grid-column: span 4; border-color: var(--success);">
+                    <h1 style="color:var(--success);">✅ UNIT SELESAI</h1>
+                    <p>Daftar perangkat siap ambil hari ini.</p>
+                </div>
+                <div class="card"><h3>iPhone 13</h3><p>Done - Ganti LCD</p></div>
+                <div class="card"><h3>Samsung S22</h3><p>Done - IC Power</p></div>
+            </div>
+        </div>
+
+        <div id="tech-page" class="page">
+            <div class="bento-grid">
+                <div class="card hero-card" style="grid-column: span 4;">
+                    <h1 style="color:var(--accent);">👨‍🔧 TEKNISI TEAM</h1>
+                </div>
+                <div class="card">
+                    <div class="tech-avatar">RM</div>
+                    <h3>RAMA</h3>
+                    <p style="color:var(--success); font-weight:800; font-size:0.8rem;">● ONLINE</p>
+                </div>
+                <div class="card">
+                    <div class="tech-avatar" style="background:#ffaa00">BN</div>
+                    <h3>BENO</h3>
+                    <p style="color:#ffaa00; font-weight:800; font-size:0.8rem;">● DI JALAN</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact" class="page">
+            <div class="bento-grid">
+                <div class="card hero-card">
+                    <h1>TANYA <span>TEKNISI.</span></h1>
+                    <div class="wa-form">
+                        <input type="text" id="wa-name" placeholder="Nama Anda">
+                        <input type="text" id="wa-model" placeholder="Tipe HP (Contoh: iPhone 11)">
+                        <textarea id="wa-desc" rows="3" placeholder="Apa kendalanya?"></textarea>
+                        <button class="wa-btn" onclick="sendWA()">
+                            <i class="fab fa-whatsapp"></i> KIRIM SEKARANG
+                        </button>
+                    </div>
+                </div>
+                <div class="card" style="grid-column: span 2;">
+                    <h3>KONSULTASI GRATIS</h3>
+                    <p style="opacity: 0.6;">Admin kami akan merespon pertanyaan Anda dalam hitungan menit.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentTargetPage = '';
+
+        // Mouse Glow
+        const glow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
+        });
+
+        // Toggle 3D Menu
+        function toggleMenu() {
+            document.body.classList.toggle('menu-open');
+            document.getElementById('side-menu').classList.toggle('active');
+        }
+
+        // Theme Toggle
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+
+        // Switch Page
+        function showPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            
+            const target = document.getElementById(pageId);
+            target.style.display = 'grid';
+            setTimeout(() => { target.classList.add('active'); }, 50);
+            if(element) element.classList.add('active');
+        }
+
+        // Secret Page Access
+        function openSecret(pageId) {
+            currentTargetPage = pageId;
+            document.getElementById('pass-overlay').style.display = 'flex';
+        }
+
+        function closePass() { document.getElementById('pass-overlay').style.display = 'none'; }
+
+        function checkPass() {
+            if(document.getElementById('pass-input').value === "1212") {
+                closePass();
+                showPage(currentTargetPage, null);
+                document.getElementById('pass-input').value = "";
+            } else { alert("SANDI SALAH!"); }
+        }
+
+        // WA Logic
+        function sendWA() {
+            const name = document.getElementById('wa-name').value;
+            const model = document.getElementById('wa-model').value;
+            const desc = document.getElementById('wa-desc').value;
+            const myNum = "6281234567890"; // GANTI NOMOR LO DI SINI
+            const msg = `Halo ProFix!%0A*Nama:* ${name}%0A*Tipe HP:* ${model}%0A*Kendala:* ${desc}`;
+            window.open(`https://wa.me/${myNum}?text=${msg}`, '_blank');
+        }
+    </script>
+</body>
+</html>
